@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 """Retrieves and checks a metric from graphite."""
 
 __version__ = "1.0"
