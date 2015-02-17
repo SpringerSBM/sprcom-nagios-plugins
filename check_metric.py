@@ -32,7 +32,7 @@ class Graphite(nagiosplugin.Resource):
 
 
 def retrieve_metric(host, name):
-    params = {"target": name, "format": "json", "from": "-5min"}
+    params = {"target": name, "format": "json", "from": "-5min", "until": "-90s"}
     r = requests.get("http://%s/render" % host, params=params)
     if verbose:
         print("### sent: %s" % r.request.url, file=sys.stderr)
