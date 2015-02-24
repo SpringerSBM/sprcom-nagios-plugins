@@ -39,7 +39,7 @@ def getLastUpdate(statusLine):
     return int(statusLine.split().pop(0))
 
 def getKnifeStatusCommand(hostname):
-    command = ("/usr/bin/knife status hostname:%s" % hostname).split()
+    command = ("/usr/bin/knife status hostname:%s -c /etc/chef/client.rb" % hostname).split()
     if verbose:
         print("### command: %s" % command, file=sys.stderr)
     return command
