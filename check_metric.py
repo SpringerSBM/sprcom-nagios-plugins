@@ -1,7 +1,12 @@
 #!/usr/bin/python
 # coding=utf-8
 
-"""Retrieves and checks a metric from graphite."""
+"""
+Retrieves and checks a metric from graphite.
+
+e.g.
+sumSeries(sprcom.services.price-service.live.instance.*.com.kenshoo.play.metrics.MetricsFilter.requestTimer.m15_rate)
+"""
 
 from __future__ import print_function
 
@@ -16,7 +21,7 @@ import nagiosplugin
 verbose = False
 
 @nagiosplugin.guarded
-class Graphite(nagiosplugin.Resource):
+class Metric(nagiosplugin.Resource):
     def __init__(self, host, metric, start_time, end_time):
         self.host = host
         self.metric = metric
@@ -28,7 +33,7 @@ class Graphite(nagiosplugin.Resource):
         for data in metric_json:
             for point in reversed(data['datapoints']):
                 if point[0] is not None:
-                    return [nagiosplugin.Metric(name=data['target'].split('.')[-1], value=point[0], context="Graphite")]
+                    return [nagiosplugin.Metric(name=getTargetName(data['target']), value=point[0], context="Metric")]
         # no results available
         return []
 
@@ -40,6 +45,9 @@ def retrieve_metric(host, name, start_time, end_time):
         print("### sent: %s" % r.request.url, file=sys.stderr)
         print("### received status: %s" % r.status_code, file=sys.stderr)
     return r.json()
+
+def getTargetName(target):
+    return target.split('.')[-1]
 
 
 range_desc = """
@@ -61,5 +69,5 @@ options = o.parse_args()
 
 # noinspection PyRedeclaration
 verbose = options.verbose
-nagiosplugin.Check(Graphite(options.host, options.metric, options.start, options.end),
-                   nagiosplugin.ScalarContext("Graphite", options.warning, options.critical)).main()
+nagiosplugin.Check(Metric(options.host, options.metric, options.start, options.end),
+                   nagiosplugin.ScalarContext("Metric", options.warning, options.critical)).main()
